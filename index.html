@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="hu"><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; img-src data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="theme-color" content="#f4f5f7">
+<title>Meme scanner · műszerfal</title>
+<style>
+:root{color-scheme:light dark;--bg:#f4f5f7;--card:#fff;--tx:#1f2328;--mut:#6b7280;--bd:#dcdfe4;--soft:#eceef1;--ac:#3b6fd4;--acs:#e6edfb;--bad:#c62828;--bads:#fbe9e9}
+@media(prefers-color-scheme:dark){:root{--bg:#15171a;--card:#1e2126;--tx:#e6e8eb;--mut:#9aa1ab;--bd:#323740;--soft:#2a2e35;--ac:#6f9bf0;--acs:#22304d;--bad:#ef6a6a;--bads:#3a2224}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden;-webkit-text-size-adjust:100%}
+main{max-width:640px;margin:0 auto;padding:12px 12px 40px;display:flex;flex-direction:column;gap:12px;width:100%}
+header{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
+h1{font-size:19px;margin:0;font-weight:650}
+.upd{font-size:13px;color:var(--mut)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ac);margin-right:6px}
+.dot.off{background:var(--bad)}
+nav{display:flex;flex-wrap:wrap;gap:8px}
+nav button,.btn{min-height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font:inherit;font-size:15px;cursor:pointer}
+nav button[aria-pressed=true],.btn[aria-pressed=true]{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card h2{font-size:16px;margin:0;font-weight:650}
+.call{border-left:4px solid var(--mut)}.call.active{border-left-color:var(--ac)}.call.danger{border-left-color:var(--bad);background:var(--bads)}
+.call p{margin:0;font-size:17px;overflow-wrap:anywhere}.call .bn{font-size:14px;color:var(--mut)}
+.kpi{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+.kpi .l{font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.kpi .v{font-size:22px;font-weight:700;overflow-wrap:anywhere}.kpi .s{font-size:13px;color:var(--mut)}
+.kpi .r{text-align:right}
+.bad{color:var(--bad)}.ac{color:var(--ac)}.mut{color:var(--mut)}
+.row{display:flex;justify-content:space-between;gap:12px;font-size:15px;padding:6px 0;border-bottom:1px solid var(--soft)}
+.row:last-child{border-bottom:0}.row span:first-child{color:var(--mut)}.row span:last-child{text-align:right;overflow-wrap:anywhere;min-width:0}
+details{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:0 14px}
+summary{min-height:48px;display:flex;align-items:center;font-weight:600;cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}summary::after{content:"＋";margin-left:auto;color:var(--mut)}details[open] summary::after{content:"−"}
+details>.in{padding:0 0 12px;display:flex;flex-direction:column;gap:6px}
+.bar{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:14px}
+.bar i{grid-column:1/3;display:block;height:8px;border-radius:4px;background:var(--soft);overflow:hidden}.bar i b{display:block;height:100%;background:var(--ac)}
+.tag{font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--bd);color:var(--mut);white-space:nowrap}
+.tag.k{background:var(--acs);border-color:var(--acs);color:var(--ac);font-weight:600}
+.it{display:flex;flex-direction:column;gap:4px;padding:10px 0;border-bottom:1px solid var(--soft)}.it:last-child{border-bottom:0}
+.it .t{display:flex;justify-content:space-between;gap:8px;align-items:baseline;font-weight:600}.it .d{font-size:14px;color:var(--mut);overflow-wrap:anywhere}
+input[type=search]{width:100%;min-height:48px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font:inherit;padding:0 14px}
+.filters{display:flex;flex-wrap:wrap;gap:8px}
+.note{font-size:14px;color:var(--mut)}
+footer{display:flex;flex-direction:column;gap:8px;align-items:stretch}
+footer a{min-height:44px;display:flex;align-items:center;justify-content:center;border:1px solid var(--bd);border-radius:10px;color:var(--mut);text-decoration:none;background:var(--card)}
+.flow{display:flex;flex-direction:column}
+.step{position:relative;display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:10px 12px;min-height:48px;border:1px solid var(--bd);border-radius:10px;background:var(--card)}
+.step+.step{margin-top:14px}.step+.step::before{content:"↓";position:absolute;top:-17px;left:50%;transform:translateX(-50%);color:var(--ac);font-size:14px;line-height:16px}
+.step b{font-size:20px;color:var(--ac)}.step .u{font-size:13px;color:var(--mut);text-align:right;overflow-wrap:anywhere}.step .nm{font-weight:600}
+.tag.bad{background:var(--bads);border-color:var(--bads);color:var(--bad);font-weight:600}
+.big{font-size:20px;font-weight:650;padding:14px 0;text-align:center}
+.lg{font:13px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--mut);overflow-wrap:anywhere;padding:2px 0}
+.err{color:var(--bad)}
+
+#gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
+#gate form{width:100%;max-width:380px;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:14px}
+#gate h1{font-size:20px}#gate input,#gate button{font:inherit;min-height:48px;border-radius:10px;padding:0 14px;width:100%}
+#gate input{border:1px solid var(--bd);background:var(--bg);color:var(--tx)}#gate button{border:0;background:var(--ac);color:#fff;font-weight:600}
+#gate button:disabled{opacity:.6}[hidden]{display:none!important}
+</style></head><body><div id="gate"><form id="gf" autocomplete="off"><h1>Meme scanner</h1><input id="pw" type="password" placeholder="Jelszó" autocomplete="current-password" autofocus required><p class="note err" id="ge" hidden></p><button id="gb" type="submit">Belépés</button></form></div><main id="app" hidden>
+<header><h1>Meme scanner</h1><div class="upd" id="upd"><span class="dot"></span>betöltés…</div></header>
+<nav id="tabs"></nav><div id="view" style="display:flex;flex-direction:column;gap:12px"></div>
+<footer><div class="note">Csak olvasható nézet. Percenként frissül (a közzététel kb. 15 percenként történik). Teszt-pad, nincs bizonyított előny.</div><a href="#" id="lo">Kilépés</a></footer>
+</main>
+<script>
+"use strict";
+const $=s=>document.querySelector(s);
+const hu=(v,d=2)=>v==null?"–":Number(v).toFixed(d).replace(".",",");
+const usd=(v,d=2)=>v==null?"–":(v<0?"−":"")+"$"+hu(Math.abs(v),d);
+const sgn=(v,d=2)=>v==null?"–":(v<0?"−":"+")+"$"+hu(Math.abs(v),d);
+const xf=v=>v==null?"–":hu(v,2)+"×";
+const pc=(v,d=1)=>v==null?"–":hu(v,d)+"%";
+const sp=(v,d=1)=>v==null?"–":(v<0?"−":"+")+hu(Math.abs(v),d)+"%";
+function h(tag,attrs,...kids){const e=document.createElement(tag);for(const k in(attrs||{})){const v=attrs[k];if(v==null||v===false)continue;if(k==="class")e.className=v;else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v===true?"":v)}
+ for(const c of kids.flat()){if(c==null||c===false)continue;e.append(c.nodeType?c:document.createTextNode(String(c)))}return e}
+const row=(a,b,cls)=>h("div",{class:"row"},h("span",null,a),h("span",{class:cls||""},b));
+const card=(title,...k)=>h("section",{class:"card"},title?h("h2",null,title):null,...k);
+const openKeys=new Set();
+function det(title,...k){const d=h("details",{ontoggle:()=>{d.open?openKeys.add(title):openKeys.delete(title)}},h("summary",null,title),h("div",{class:"in"},...k));if(openKeys.has(title))d.open=true;return d}
+const bar=(label,n,max,bad)=>h("div",{class:"bar"},h("span",null,label),h("b",null,String(n)),h("i",null,h("b",{style:"width:"+Math.max(n>0?2:0,Math.min(100,max?n/max*100:0))+"%"+(bad?";background:var(--mut)":"")})));
+let D=null,S=null,tab="hid",lastOk=0,failing=false;
+const ago=s=>s<90?Math.round(s)+" mp":s<5400?Math.round(s/60)+" perc":hu(s/3600,1)+" óra";
+
+function tabsList(){const t=[["hid","Híd"],["rontgen","Token-röntgen"],["szurok","Szűrők"],["kotesek","Kötések"],["strat","Stratégia"],["matrix","Mátrix"]];if(D&&D.arena)t.push(["arena","Aréna"]);if(D&&D.ext)t.push(["dont","Döntések"],["kock","Kockázat"],["edge","Edge"],["bt","Backtest"],["forr","Források"]);return t}
+function renderTabs(){const n=$("#tabs");n.replaceChildren(...tabsList().map(([k,l])=>h("button",{type:"button","aria-pressed":String(tab===k),onclick:()=>{tab=k;renderTabs();render(true);window.scrollTo(0,0)}},l)))}
+
+function vHid(){
+ const d=D,dg=d.diag||{},out=[];
+ out.push(h("section",{class:"card call "+(dg.tone||"")},h("p",null,dg.headline||"–"),dg.bottleneck?h("div",{class:"bn"},dg.bottleneck):null));
+ for(const k of d.kpis)out.push(h("section",{class:"card kpi"},h("div",null,h("div",{class:"l"},k.label),k.sub?h("div",{class:"s"},k.sub):null),h("div",{class:"r v "+(k.tone==="danger"?"bad":"")},k.value)));
+ const dm=d.daemon;
+ out.push(det("Rendszer (daemon)",...(dm?[row("Állapot",dm.running?"fut ("+dm.state+")":"leállt",dm.running?"":"bad"),row("Heartbeat kora",ago(dm.ageS)),row("Utolsó scan",(dm.last||"–")+(dm.lastSecs?" · "+Math.round(dm.lastSecs)+" mp":"")),row("Következő scan",dm.next||"–"),row("Scan ma / összesen",dm.today+" / "+dm.total),row("Hibasorozat",String(dm.streak),dm.streak?"bad":""),row("Éles vétel engedett",dm.buyAllowed?"igen":"nem"),row("HALT / FREEZE",(dm.kill.halted?"HALT":"–")+" / "+(dm.kill.freeze?"FREEZE":"–"),dm.kill.halted?"bad":""),row("Karanténban",String(dm.quarantine),dm.quarantine?"bad":"")]:[row("Állapot","nincs heartbeat","bad")])));
+ const rg=d.regime;
+ out.push(det("Piaci rezsim",...(rg?[row("Rezsim",rg.unknown?"ismeretlen":rg.riskOff?"RISK-OFF (nincs új belépés)":"RISK-ON"),row("Breadth",rg.breadth||"–"),row("SOL 6h",rg.solH6==null?"–":sp(rg.solH6,2),rg.solH6<0?"bad":""),row("Mérve",rg.at||"–"),row("Jelenlegi állapot óta",rg.since||"–"),...(rg.reasons||[]).map(r=>h("div",{class:"note"},"• "+r))]:[row("Állapot","nincs adat")])));
+ const lv=d.live;
+ out.push(det("Éles mód",row("Éles kapcsoló",lv.enabled?"BE":"KI"),row("HALT",lv.halted?"igen":"nem",lv.halted?"bad":""),row("Valódi vételek / lezárt",lv.trades+" / "+lv.closed),row("Nyert",String(lv.wins)),row("Realizált",sgn(lv.realizedUsd),lv.realizedUsd<0?"bad":""),row("Össz. P&L",lv.pnlUsd==null?"–":sgn(lv.pnlUsd),lv.pnlUsd<0?"bad":""),row("Szimulált (dry-run) tesztek",String(lv.simulated)),row("Elutasított vételek",String(lv.refused))));
+ const p=d.paper;
+ out.push(det("Tesztpad (papír, $"+hu(p.bankroll,0)+" kezdőtőke)",row("Kötések / lezárt / nyitott",p.trades+" / "+p.closed+" / "+p.open),row("Realizált",sgn(p.realized),p.realized<0?"bad":""),row("Nem realizált",sgn(p.unreal),p.unreal<0?"bad":""),row("Összesen",sgn(p.total),p.total<0?"bad":""),row("Költségfeltevés",pc(p.cost*100,0)+" oda-vissza"),h("div",{class:"note"},"Nincs bizonyított előny: ez egy kis teszt-pad, a számok csak adatgyűjtésre valók.")));
+ const lo=lv.open;
+ if(lo)out.splice(1+d.kpis.length,0,h('section',{class:'card'},h('h2',null,'Nyitott éles pozíció'),row('Token',lo.symbol),row('Most / csúcs',xf(lo.x)+' / '+xf(lo.peak)),row('Aktív stop (kb.)',xf(lo.stop)),row('P&L',lo.pnlUsd==null?'–':sgn(lo.pnlUsd),lo.pnlUsd<0?'bad':'')));
+ if(d.feed&&d.feed.length)out.push(det("Legutóbbi riasztások",...d.feed.slice(0,8).map(f=>h("div",{class:"it"},h("div",{class:"t"},h("span",{class:/STOP|LEÁLL|HIBA|KARANT|HALOTT|VÉSZ|SIKERTELEN/.test(f.kind)?"bad":""},f.kind),h("span",{class:"mut",style:"font-weight:400;font-size:13px"},f.t)),h("div",{class:"d"},f.text)))));
+ if(d.notes&&d.notes.length)out.push(det("Utolsó scan jegyzetei"+(d.notes[0].run?" ("+d.notes[0].run+")":""),...d.notes.map(n=>h("div",{class:"note"},"• "+n.text))));
+ return out}
+
+function vRontgen(){
+ const f=D.funnel;if(!f)return[card("Token-röntgen",h("div",{class:"note"},"Még nincs scan-adat."))];
+ const st=[["Szkennelt",f.cand],["Árazott",f.priced],["Előszűrő után",f.surv],["Mély ellenőrzés",f.deep],["PASS",f.passes]];const mx=Math.max(1,f.cand||1);
+ const out=[card("Jelölt-tölcsér"+(f.time?" · "+f.time:""),...st.map(([l,n])=>bar(l,n,mx)),row("Ebben a scanben vétel",String(f.bought)),f.secs?row("Scan ideje",f.secs+" mp"):null,f.apiIssues?row("API-gondok",f.apiIssues,"bad"):null)];
+ if(f.rej&&f.rej.length){const m=Math.max(1,...f.rej.map(r=>r.count));out.push(card("Elutasítási okok (szűk keresztmetszet)",...f.rej.map(r=>bar(r.label,r.count,m,true))))}
+ if(f.pre)out.push(card("Elő-indexelő",row("Könnyű szűrőnek megfelel",String(f.pre.light)),row("Ebben a scanben indexelve",String(f.pre.indexed)),row("Vár a következőkre",String(f.pre.left)),row("Keret / scan",String(f.pre.budget)),f.hist!=null?row("History store (6h előzmény)",f.hist+" token"):null));
+ out.push(card("Mélyen ellenőrzött jelöltek",...(f.checked&&f.checked.length?f.checked.map(c=>h("div",{class:"it"},h("div",{class:"t"},h("span",null,c.symbol),h("span",{class:"tag "+(c.verdict==="PASS"?"k":"")},c.verdict)),h("div",{class:"d"},c.why))):[h("div",{class:"note"},"Az utolsó scanben egyetlen jelölt sem jutott el a mély ellenőrzésig.")])));
+ return out}
+
+function vSzurok(){
+ const cats=["Mind","Belépés","Kapuk","Kilépés","Vészkilépés","Nem jóváhagyott"];let cat="Mind",q="";
+ const list=h("div",{class:"card"}),bt=h("div",{class:"filters"});
+ const draw=()=>{bt.replaceChildren(...cats.map(c=>h("button",{type:"button",class:"btn","aria-pressed":String(c===cat),onclick:()=>{cat=c;draw()}},c)));
+  const rs=S.rules.filter(r=>(cat==="Mind"||r.cat===cat)&&(!q||(r.name+" "+r.thr+" "+r.note).toLowerCase().includes(q)));
+  list.replaceChildren(h("h2",null,rs.length+" szabály"),...rs.map(r=>h("div",{class:"it"},h("div",{class:"t"},h("span",null,r.name),h("span",{class:"tag "+(r.st==="kész"?"k":"")},r.st)),r.thr&&r.thr!=="–"?h("div",null,r.thr):null,r.note?h("div",{class:"d"},r.note):null)))};
+ draw();return[bt,h("input",{type:"search",placeholder:"Keresés a szabályokban…",oninput:e=>{q=e.target.value.toLowerCase();draw()}}),list]}
+
+function tradeItem(t){return h("div",{class:"it"},h("div",{class:"t"},h("span",null,t.symbol),h("span",{class:(t.pnl!=null&&t.pnl<0)?"bad":""},t.pnl==null?"–":sgn(t.pnl)+(t.pct!=null?" ("+sp(t.pct)+")":""))),h("div",{class:"d"},[t.time||t.opened,t.status,t.reason,t.held!=null?hu(t.held,1)+" óra":null,t.peak!=null?"csúcs "+xf(t.peak):null].filter(Boolean).join(" · ")))}
+function vKotesek(){
+ const d=D,lv=d.live,lo=lv.open,out=[];
+ if(lo)out.push(card("Nyitott éles pozíció",row("Token",lo.symbol),row("Állapot",lo.status),row("Most / csúcs",xf(lo.x)+" / "+xf(lo.peak)),row("Aktív stop (kb.)",xf(lo.stop)),row("50% eladva (4,5×)",lo.tpDone?"igen":"nem"),row("Nem realizált P&L",lo.pnlUsd==null?"–":sgn(lo.pnlUsd),lo.pnlUsd<0?"bad":""),row("Tartás",lo.held==null?"–":hu(lo.held,1)+" óra"),row("Nyitva / jelölve",(lo.opened||"–")+" / "+(lo.marked||"–"))));
+ else out.push(card("Nyitott éles pozíció",h("div",{class:"note"},"Nincs nyitott éles pozíció.")));
+ out.push(card("Éles kötések (valódi pénz) — "+d.liveTrades.length,...(d.liveTrades.length?d.liveTrades.slice().reverse().map(tradeItem):[h("div",{class:"note"},"Még nem volt valódi éles kötés"+(lv.simulated?" ("+lv.simulated+" szimulált dry-run teszt nem számít)":"")+".")])));
+ const pp=d.paper.openList;
+ out.push(card("Papír pozíciók",...(pp.length?pp.map(o=>h("div",{class:"it"},h("div",{class:"t"},h("span",null,o.symbol),h("span",{class:o.pnl<0?"bad":""},sgn(o.pnl))),h("div",{class:"d"},xf(o.x)+" · csúcs "+xf(o.peak)+" · "+(o.held!=null?hu(o.held,1)+" óra":"")+" · "+(o.at||"")))):[h("div",{class:"note"},"Nincs nyitott papír pozíció.")])));
+ out.push(card("Papír kötések — "+d.paperTrades.length,...(d.paperTrades.length?d.paperTrades.slice().reverse().map(tradeItem):[h("div",{class:"note"},"Még nincs papír kötés.")])));
+ out.push(det("Riasztás-kódok",...S.codes.map(c=>row(c[0],c[1]))));
+ return out}
+
+function vStrat(){
+ const c=D.cfg,out=[];
+ out.push(card("Kilépési terv (hibrid) — papír és éles ugyanazt használja",row("Kemény stop",sp(c.stop*100,0)),row("Ratchet",c.ratchet.map(r=>xf(r[0])+"→"+xf(r[1])).join(" · ")),row("Követő stop innen",xf(c.trailFrom)),row("Fél eladás",xf(c.tpHalfX)+"-nél ("+Math.round(c.tpHalfFrac*100)+"%)"),row("Időstop",c.timeH+" óra (csúcs < "+xf(c.timePeakX)+" és érték < "+xf(1+c.timeGain)+")"),row("Vészkilépés",["likviditás −"+Math.round(c.liqDrop*100)+"%","árhatás > "+hu(c.impactExit,1)+"%","dump −"+Math.round(c.holderDrop*100)+"%"].join(" · "))));
+ out.push(card("3 lépés",h("div",null,"1. Belépés: csak ha minden szűrő és kapu teljesül (RISK-ON rezsim, 6h csúcstól 30–55% visszahúzás, momentum-megerősítés, biztonsági ellenőrzések)."),h("div",null,"2. Védelem: kemény stop, majd a ratchet felfelé viszi, 3,3×-től követő stop."),h("div",null,"3. Kilépés: 50% eladás 4,5×-nél, a többi fut; vészkilépés rug-jelekre.")));
+ out.push(det("A vétel 18 lépése",...S.steps.map((s,i)=>h("div",{class:"it"},h("div",{class:"t"},(i+1)+". "+s.title),h("div",{class:"d"},s.detail)))));
+ return out}
+
+function statCard(t,s){return card(t,s.n?[row("Kötés",s.n+" ("+s.wins+" nyert)"),row("Nyerési arány",pc(s.winRate,0)),row("Profit factor",s.pf==null?"–":hu(s.pf,2)),row("Csúcs ≥ 1,45× aránya",pc(s.reach,0)),row("Rug-arány",pc(s.rug,0),s.rug>0?"bad":""),row("Végrehajtási drag",s.drag==null?"–":pc(s.drag)),row("P&L",sgn(s.pnl),s.pnl<0?"bad":"")]:h("div",{class:"note"},"Még nincs lezárt kötés."))}
+function vMatrix(){const w=D.weekly,out=[h("div",{class:"note card"},"Stop/folytatás mátrix: a döntéshez 20–30 lezárt kötés kell; kisebb mintánál csak adatgyűjtés, nem következtetés.")];
+ out.push(statCard("Utolsó 7 nap · éles",w.w7.live),statCard("Utolsó 7 nap · papír",w.w7.paper),statCard("Összes · éles",w.all.live),statCard("Összes · papír",w.all.paper));
+ if(D.whatif&&D.whatif.length)out.push(det("Szűrőnkénti what-if (WEEKLY.md)",...D.whatif.map(r=>h("div",{class:"it"},h("div",{class:"t"},r[0]),h("div",{class:"d"},r.slice(1).join(" · "))))));
+ return out}
+
+function vArena(){const a=D.arena;if(!a)return[card("Aréna",h("div",{class:"note"},"Az aréna még épül, nincs adat."))];const out=[];
+ out.push(card("Papír-aréna",row("Stratégiák",String(a.nStrat)),row("Kötések (nyitott)",a.nTrades+" ("+a.nOpen+")"),row("Jelek / belépések",a.nSignals+" / "+a.nEntries),row("Scanek",String(a.scans)),row("Minimum minta",String(a.minN)),row("Bizonyított",a.any?a.proven.join(", "):"egyik sem"),h("div",{class:"note"},"Csak mérés: az aréna nem kereskedik és nem módosít semmit.")));
+ for(const r of a.rows){const [e,x]=r.id.split("|");const desc=r.g==="x"?((S.arenaExit[x]||x)+" · belépés: "+(e==="BASE"?"alap":"halászháló")):(S.arenaEntry[e]||"");const small=r.n<a.minN;
+  out.push(card(r.nm,h("div",{class:"note"},desc),h("div",{class:"bar"},h("span",null,"minta"),h("b",null,r.n+"/"+a.minN),h("i",null,h("b",{style:"width:"+Math.max(r.n?2:0,Math.min(100,r.n/a.minN*100))+"%"}))),
+   h("span",{class:"tag "+(r.pv?"k":"")},r.g==="c"?"kontroll":r.g==="i"?"importált":r.pv?"bizonyított":small?"kis minta":"nincs bizonyítva"),
+   row("Átlag nettó",sp(r.m),r.m<0?"bad":""),row("Nyerési arány",pc(r.w,0)),row("Medián",sp(r.md)),row("Profit factor",r.pf==null?"–":hu(r.pf,2)),row("Rug-arány",pc(r.rug,0)),row("Átl. tartás",r.h==null?"–":hu(r.h,1)+" óra"),row("Nyitott",String(r.o))))}
+ return out}
+
+const NOEXT=t=>[card(t,h("div",{class:"note"},"Ennek a nézetnek az adata most nem elérhető."))];
+const rng=(a,u)=>a&&a[0]!=null?hu(a[0],0)+"–"+hu(a[1],0)+(u||"%"):"–";
+const tg=(t,bad)=>h("span",{class:"tag"+(bad?" bad":"")},t);
+function vDont(){
+ const E=D.ext;if(!E||E.error||!E.decision)return NOEXT("Döntésnapló");const x=E.decision,out=[];
+ out.push(card("Élő folyamat",h("div",{class:"note"},"Szkenner → Rug-szűrő → Méretező → Végrehajtó → Napló. A számok a legutóbbi szkennelésből és a naplóból vannak."),
+  h("div",{class:"flow"},...(x.flow||[]).map(s=>h("div",{class:"step"},h("span",{class:"nm"},s.name),h("span",null,h("b",null,s.n==null?"–":String(s.n))),h("span",{class:"u"},s.unit))))));
+ out.push(det("Ügynökök ("+(x.agents||[]).length+")",...(x.agents||[]).map(a=>h("div",{class:"it"},h("div",{class:"t"},h("span",null,a.name),tg(a.state,a.state!=="fut")),h("div",{class:"d"},a.role),h("div",{class:"d"},a.line)))));
+ if(!(x.trades||[]).length){
+  out.push(card("Kötések döntésnaplója",h("div",{class:"big"},"még nincs kötés"),h("div",{class:"note"},"Az első papíros kötésnél itt látod: melyik stratégia jelzett, mit mutattak a szűrők, és egy-egy mondatban a belépés és a kilépés oka.")))}
+ else{
+  out.push(h("h2",{class:"note"},"Kötések döntésnaplója"));
+  out.push(...x.trades.map(t=>det((t.time||"")+" "+t.sym+" · "+t.strategy+" · "+(t.open?"nyitott":t.win?"nyereség":"veszteség"),
+   row("Jelző stratégia",t.strategy+(t.signal_strategies&&t.signal_strategies.length>1?" (+"+(t.signal_strategies.length-1)+")":"")),
+   t.net_pct!=null?row("Eredmény",sp(t.net_pct),t.net_pct<0?"bad":""):null,t.peak_x!=null?row("Csúcs",xf(t.peak_x)):null,t.held_h!=null?row("Tartás",hu(t.held_h,1)+" óra"):null,
+   row("Kilépő terv",t.exit_plan||"–"),
+   ...(t.filters||[]).map(f=>h("div",{class:"it"},h("div",{class:"t"},h("span",null,f.rule),tg(f.st,f.st==="nem felelt meg")),h("div",{class:"d"},f.text))),
+   ...(t.log||[]).map(l=>h("div",{class:"lg"},l)))))}
+ out.push(card("Utolsó jelzések (aréna)",...((x.signals||[]).length?x.signals.map(s=>h("div",{class:"it"},h("div",{class:"t"},h("span",null,s.sym+" · "+(s.time||"")),tg(s.n_pass?"átment":"elutasítva")),h("div",{class:"d"},"reason: "+s.reason),
+   h("div",{class:"d"},s.n_pass+" / "+s.n_strat+" stratégia"+(s.mcap!=null?" · mcap ≈ $"+hu(s.mcap,2)+"M":"")))):[h("div",{class:"note"},"még nincs jelzés")])));
+ out.push(card("Utolsó mély ellenőrzések",...((x.scans||[]).length?x.scans.map(s=>det((s.time||"")+" "+s.sym+" · "+s.status,row("Megfelelt",String(s.pass_n)),row("Nem felelt meg",String(s.fail_n),s.fail_n?"bad":""),row("Nem ellenőrizhető",String(s.unv_n)),
+   ...(s.det||[]).map(f=>h("div",{class:"it"},h("div",{class:"t"},h("span",null,f.rule),tg(f.status,true)),h("div",{class:"d"},f.text))),h("div",{class:"lg"},"reason: "+s.reason))):[h("div",{class:"note"},"még nincs ellenőrzés")])));
+ out.push(h("div",{class:"note"},x.note||""));return out}
+
+function vKock(){
+ const E=D.ext;if(!E||E.error||!E.risk)return NOEXT("Kockázat");const R=E.risk,out=[];
+ out.push(card("Kockázat kis mintán",h("div",{class:"note"},"Csak megjelenítés: semmit nem módosít, a 'bizonyított' szabályt sem. A sávok szándékosan szélesek: ez az ára annak, hogy bármikor megnézheted az adatot."),
+  R.n_trades?row("Lezárt kötés összesen",String(R.n_trades)):h("div",{class:"big"},"még nincs kötés"),R.label?h("span",{class:"tag"},R.label):null));
+ for(const b of R.rows||[]){
+  out.push(det(b.name+" · n="+b.n,b.label?tg(b.label):null,
+   row("Találati arány",pc(b.hit,0)+" (Wilson "+rng(b.wilson)+")"),row("Bármikor érvényes sáv",rng(b.hit_cs)),
+   row("Átlag nettó",sp(b.mean_pct),b.mean_pct<0?"bad":""),row("Átlag bármikor érvényes sávja",rng(b.mean_cs)+" (vágott kötés: "+b.clipped+")"),
+   b.mc?h("div",null,h("div",{class:"note"},"Monte Carlo ("+b.mc.sims+" futás, "+b.mc.horizon_days+" nap, "+b.mc.days+" megfigyelt nap)"),
+     row("Felülvizsgálati HALT esélye","≈ "+pc(b.mc.p_halt,0)),row("4 egymás utáni veszteség","≈ "+pc(b.mc.p_streak,0)),row("Ruin (−"+R.params.ruin_units+" tét)","≈ "+pc(b.mc.p_ruin,0)),
+     row("Végeredmény (5% / medián / 95%)",b.mc.end.map(v=>hu(v,1)).join(" / ")+" tét")):null,
+   b.tuw?h("div",null,row("Víz alatt töltött idő",pc(b.tuw.share,0)+" a kötésekből"),row("Leghosszabb víz alatti szakasz",b.tuw.longest_trades+" kötés / "+hu(b.tuw.longest_days,1)+" nap"),
+     row("Mostani mélység",hu(b.tuw.depth_now,2)+" tét",b.tuw.now_under?"bad":""),row("Legnagyobb mélység",hu(b.tuw.depth_max,2)+" tét")):null))}
+ out.push(det("Feltevések és módszer",...(R.assumptions||[]).map(t=>h("div",{class:"d note"},t)),h("div",{class:"note"},"α = "+(R.params?R.params.alpha:"–")+"; a sáv Howard et al. (2021) 14. egyenlete, m="+(R.params?R.params.m_opt:"–")+" kötésre hangolva.")));
+ return out}
+
+function vEdge(){
+ const E=D.ext;if(!E||E.error||!E.edge||E.edge.error)return NOEXT("Edge-készenlét");const G=E.edge,out=[],F=G.funnel||{},C=G.cost||{},P=G.power||{},O=G.observed||{};
+ const eta=x=>!x||x.days==null?"nem becsülhető":x.days===0?"kész":"~"+hu(x.days,0)+" nap"+(x.lo!=null&&x.hi!=null?" ("+hu(x.lo,0)+"–"+hu(x.hi,0)+")":"");
+ out.push(card("Edge-készenlét",h("div",{class:"note"},"Csak mérés: semmit nem módosít, nem szűr, a 'bizonyított' szabály változatlan. Azt mutatja, mennyi adat hiányzik ahhoz, hogy egyáltalán állítani lehessen valamit."),
+  h("div",{class:"big"},F.closed?F.closed+" lezárt kötés":"még nincs lezárt kötés"),G.label?tg(G.label):null,
+  row("Szkennelés (megfigyelt idő)",String(F.scans||0)+" ("+hu(F.days,1)+" nap)"),row("Jelzés / belépés / nyitott",(F.signals||0)+" / "+(F.entries||0)+" / "+(F.open||0)),
+  h("div",{class:"note"},"Cél: 30 kötés = első hivatalos teszt, 100 kötés = erősebb következtetés. A becslés az eddigi fill-ütemből jön; 0 belépésnél csak felső korlát van (3 szabály), ütem nincs.")));
+ const fam={frozen:"Befagyasztott család (15 hipotézis)",control:"Kontroll",explore:"Felderítő család (külön Holm, soha nem bizonyított)"};
+ for(const f of ["frozen","control","explore"]){const rs=(G.rows||[]).filter(r=>r.family===f);if(!rs.length)continue;
+  out.push(card(fam[f],...rs.map(r=>det(r.name+" · n="+r.n,r.small?tg("nincs elég adat"):tg(r.status),
+   bar("30 felé",r.n,30),bar("100 felé",r.n,100),row("Belépés (fill) / nyitott",r.fills+" / "+r.n_open),
+   row("Fill-ütem",r.rate_day==null?"nincs mérhető (95% felső korlát: <"+hu(r.rate_ub_day,1)+" / nap)":hu(r.rate_day,2)+" / nap"),
+   row("Idő 30-ig",eta(r.eta30)),row("Idő 100-ig",eta(r.eta100))))))}
+ out.push(card("Ha a fill-ütem naponta … (forgatókönyv)",...(G.scenarios||[]).map(s=>row(hu(s.rate,2)+" fill / nap / stratégia","30-ig "+hu(s.d30,0)+" nap · 100-ig "+hu(s.d100,0)+" nap")),
+  h("div",{class:"note"},"Nem előrejelzés: a valós ütem ismeretlen, amíg nincs belépés. A szűk keresztmetszet eddig az előszűrő, a rezsim és a Token-2022 elutasítás, nem a belépési zóna.")));
+ out.push(card("Mennyi adat kell? (kimutatható hatás)",row("Szórás (egy kötés nettó %)",hu(P.sigma,0)+"% ("+(P.sigma_src||"")+")"),
+  ...(P.rows||[]).map(r=>row("n="+r.n+": legkisebb kimutatható átlag",hu(r.mde,0)+"% / kötés ("+hu(r.mde_sigma,2)+" szórás)")),
+  ...(P.need||[]).map(r=>row("Átlag +"+r.edge+"% / kötés kimutatásához",r.n+" kötés")),
+  h("div",{class:"note"},"Normál közelítés; egyoldali teszt a Holm-küszöbön (α "+hu(P.alpha,2)+" / "+P.m+" hipotézis), "+P.power+"% erő. n=30-nál csak óriási hatás látszik; ez a mérés fő üzenete.")));
+ out.push(card("Költség-érzékenység ($"+C.pos_usd+" pozíció)",h("div",{class:"note"},"Rögzített díj (hálózat + 2. eladási tx) ≈ "+hu(C.fixed_pct,1)+"% a pozícióból (SOL-ár feltételezés: $"+C.sol_px_assumed+"). Átlagos veszteség feltételezés: −"+C.loss_assumed+"%."),
+  ...(C.table||[]).map(t=>det("Teljes költség "+t.c+"% (≈$"+hu(t.c_usd,2)+")"+(t.c===C.flat_fallback?" · lapos tartalék":""),
+    ...(C.wins_cols||[]).map((w,i)=>row("Átlagos nyerés +"+w+"% → break-even találati arány",hu(t.be_hit[i],0)+"%")),
+    ...(C.hits_cols||[]).map((x,i)=>row(x+"% találati aránynál kell átlagos nyerés",hu(t.be_win[i],0)+"%")))),
+  h("div",{class:"note"},"Break-even: p·W − (1−p)·L − költség = 0. A 6% a költségkapu felső határa; a 15% a lapos tartalék, ha nincs árajánlat.")));
+ out.push(card("Mért költség (zárt kötésekből)",!O.n?h("div",{class:"note"},"még nincs mért adat"):h("div",null,
+  row("Zárt kötés",String(O.n)),row("Találati arány / átl. nyerés / átl. veszteség",(O.hit==null?"–":pc(O.hit,0))+" / "+(O.avg_win==null?"–":sp(O.avg_win,0))+" / "+(O.avg_loss==null?"–":"−"+hu(O.avg_loss,0)+"%")),
+  row("Átlag nettó",sp(O.mean_net_pct)),row("Modell-költség (átlag)",O.cost_pct==null?"–":pc(O.cost_pct,2)+" (n="+O.cost_n+")"),
+  row("Eladási csúszás (mért)",O.exit_slip_pct==null?"–":pc(O.exit_slip_pct,2)+" (n="+O.exit_slip_n+")"),
+  row("2. eladási díj (nem könyvelt)",O.fee2_pct==null?"–":pc(O.fee2_pct,2)+" (n="+O.fee2_n+")"),
+  row("Átlag nettó a 2. díjjal",O.net_with_2nd_fee_pct==null?"–":sp(O.net_with_2nd_fee_pct,2))),
+  h("div",{class:"note"},"A net_pnl nem változott; a szigorúbb szám külön mező.")));
+ const W=E.whale||{};
+ if(W&&!W.empty){const RJ=W.rejected||{},XC=W.excluded||{},fr=W.filt_vs_raw,fg=W.filt_vs_reg,ws=W.strategies||[],RG=W.regimes||["RISK-ON","RISK-OFF"],dl=x=>x?sp(x.delta)+(x.lo!=null?" ("+sp(x.lo)+" … "+sp(x.hi)+")":""):"nincs elég adat";
+  out.push(card("Whale-másolás (papír, felderítő)",h("div",{class:"note"},"Csak papír, külön felderítő család: sosem 'bizonyított', élesbe nem kerül. Közelítő whale-PnL, túlélési torzítás, késleltetett észlelés."+(W.disabled?" · KIKAPCSOLVA":"")),
+   row("Whale-lista",(W.n_whales||0)+" whale"+(W.list_age_h!=null?" · "+hu(W.list_age_h,1)+" órás lista":"")+" · kizárt bot: "+(W.n_hyper||0)),
+   row("Jelzés (új whale-vétel)",String(W.n_signals||0)+(W.n_dup?" · ismétlés: "+W.n_dup:"")),
+   row("Észlelési késés (medián)",W.latency_median_s==null?"–":ago(W.latency_median_s)+" (n="+W.latency_n+")"),
+   row("Whale eladta előttünk",String(W.whale_sells||0)),
+   ...ws.map(r=>det(r.name+" · n="+r.n,r.small?tg("nincs elég adat"):tg(r.status),bar("30 felé",r.n,30),
+     row("Belépés / nyitott / lezárt",(r.n_entries||0)+" / "+(r.n_open||0)+" / "+(r.n||0)),
+     row("Átlag nettó",r.mean_pct==null?"–":sp(r.mean_pct)+(r.ci_lo!=null?" ("+sp(r.ci_lo)+" … "+sp(r.ci_hi)+")":"")),
+     row("Találati arány",r.win_rate==null?"–":pc(r.win_rate,0)+(r.wilson&&r.wilson[0]!=null?" (Wilson "+hu(r.wilson[0],0)+"–"+hu(r.wilson[1],0)+"%)":"")),
+     ...Object.keys(r.by_regime||{}).map(k=>{const b=r.by_regime[k];return row(k,"belépés "+(b.n_entries||0)+" · lezárt "+b.n+(b.n?" · átlag "+sp(b.mean_pct)+" · nyerő "+pc(b.win_rate,0):""))}))),
+   det("Rezsim szerint (lezárt / átlag)",...RG.map(k=>h("div",null,h("b",null,k),...ws.map(r=>{const b=(r.by_regime||{})[k]||{n:0};return row(r.name,b.n?"n="+b.n+" · "+sp(b.mean_pct)+(b.n<30?" · kevés adat":""):"nincs adat")})))),
+   row("Szűrt − nyers (átlag)",dl(fr)),
+   row("Szűrt − szűrt+rezsim (átlag)",dl(fg)),
+   det("Miért utasította el a szűrő",...(Object.keys(RJ).length?Object.keys(RJ).map(k=>h("div",null,h("b",null,k),...RJ[k].map(x=>row(x[0],String(x[1]))))):[h("div",{class:"note"},"még nincs elutasítás")])),
+   det("Lista-kizárások (darab)",...(Object.keys(XC).length?Object.keys(XC).map(k=>row(k,String(XC[k]))):[h("div",{class:"note"},"nincs")]))))}
+ const AD=E.adaptive||{};
+ if(AD&&!AD.empty){const M=AD.meta||{};
+  out.push(card("Adaptív motor (papír, csak javasol)",h("div",{class:"note"},AD.note+(AD.disabled?" · KIKAPCSOLVA":"")),
+   row("Lezárt papír-trade",String(AD.n_trades||0)+" · felezési idő "+hu(AD.half_life_d||14,0)+" nap"),
+   ...(AD.regimes||[]).map(r=>det(r.regime+" · n="+r.n,r.proposals?tg("JAVASLAT"):tg(r.status.indexOf("nincs elég")===0?"nincs elég adat":"felderítő"),
+     h("div",{class:"note"},r.status),
+     ...(r.top.length?r.top.map(a=>row(a.name+" ("+a.fam+")","súly "+hu(a.weight_pct,0)+"% · n="+a.n+" · átlag "+sp(a.post_mean)+" · nyerő "+hu(a.win_rate,0)+"%"+(a.proposal?" · JAVASLAT":""))):[h("div",{class:"note"},"még nincs lezárt trade ebben a rezsimben")]),
+     r.live_n?row("Éles lezárt (csak referencia)",String(r.live_n)):null)),
+   row("ADAPTIVE_META (virtuális, felderítő)",M.n?("n="+M.n+" · átlag "+sp(M.mean_pct)+(M.ci_lo!=null?" ("+sp(M.ci_lo)+" … "+sp(M.ci_hi)+")":"")+" · "+M.status):"nincs elég adat")))}
+ const SH=G.shadow||{};
+ out.push(card("Árnyék-mérés (LP-zár, organicScore)",h("div",{class:"note"},"Csak naplózás, nem szűrő."),row("Mért token",String(SH.mints||0)),row("LP-zár ismert",String(SH.with_lp||0)),row("organicScore ismert",String(SH.with_organic||0))));
+ out.push(card("Mikor mit állíthatunk",...(G.milestones||[]).map(t=>h("div",{class:"d note"},t))));
+ out.push(card("Mi cáfolná az edge-et",...(G.refute||[]).map(t=>h("div",{class:"d note"},t))));
+ return out}
+
+function vBt(){
+ const E=D.ext;if(!E||E.error||!E.bt||E.bt.error)return NOEXT("Backtest");const B=E.bt,out=[];
+ const W=card("Figyelem: torzított eredmény",...(B.bias||[]).map(t=>h("div",{class:"d note"},"• "+t)));W.className+=" call active";out.push(W);
+ if(B.empty){out.push(card("Backtest",h("div",{class:"note"},B.empty)));return out}
+ const wr=c=>c.win_rate==null?"–":pc(c.win_rate*100,0)+(c.wilson?" (Wilson "+pc(c.wilson[0]*100,0)+"–"+pc(c.wilson[1]*100,0)+")":"");
+ const rg=a=>a?sp(a[0],1)+" … "+sp(a[1],1):"–";
+ const M=B.main||{n:0},Sm=B.sample||{};
+ out.push(card("Eredmény · múltbeli visszajátszás",h("div",{class:"big"},(M.n||0)+" kötés"),M.status!=="ok"?tg("nincs elég adat"):tg("n ≥ 30","k"),
+  row("Átlag / kötés (költséggel)",sp(M.mean,2)),row("Medián / kötés",sp(M.median,2)),row("Nyerési arány",wr(M)),
+  row("Nyert / stop / köztes",(M.n_win==null?"–":M.n_win)+" / "+(M.n_stop==null?"–":M.n_stop)+" / "+(M.n_mid==null?"–":M.n_mid)),
+  row("Legjobb / legrosszabb",sp(M.best,0)+" / "+sp(M.worst,0)),
+  row("Max drawdown",M.max_dd==null?"–":"−"+hu(M.max_dd,0)+"% (a pozíció %-ainak összege)","bad"),
+  M.status==="ok"?row("Átlag 95% sáv (bootstrap)",rg(M.ci_mean)):null,M.status==="ok"?row("Átlag sáv napokra csoportosítva",rg(M.ci_cluster)):null,
+  M.status==="ok"?row("PSR / DSR",(M.psr==null?"–":hu(M.psr,2))+" / "+(M.dsr==null?"–":hu(M.dsr,2))):null,
+  h("div",{class:"note"},"A kötés = egy belépés a jóváhagyott szabály szerint, a kilépés ugyanaz, mint az arénában (−35% stop, ratchet, 4,5×-nél fele, 3 órás időstop). Szám 30 kötés alatt nem állítható."+(M.censored?" "+M.censored+" kötés 48 óra után nyitva maradt (utolsó áron lezárva).":""))));
+ const C=B.control;
+ out.push(card("Kontroll: véletlen belépés, ugyanaz a kilépés",!C||!C.n?h("div",{class:"note"},"nincs kontroll-adat"):h("div",null,
+  row("Kontroll kötés",String(C.n)+(C.status!=="ok"?" · nincs elég adat":"")),row("Átlag / kötés",sp(C.mean,2)),row("Nyerési arány",wr(C)),
+  B.diff&&B.diff.ci?row("Különbség (szabály − kontroll)",sp(B.diff.mean_diff,2)):null,B.diff&&B.diff.ci?row("Különbség 95% sáv",rg(B.diff.ci)):null,
+  B.diff&&B.diff.ci?row("Esély, hogy nincs különbség",B.diff.p_le0==null?"–":hu(B.diff.p_le0,3)):null),
+  h("div",{class:"note"},"Ugyanazok a poolok, véletlen időpont, csak a kor/forgalom/mcap feltétel. Ha a sáv átfedi a 0-t, a szabály nem különböztethető meg a véletlentől.")));
+ out.push(card("Költség-érzékenység",...(B.costs||[]).map(c=>row(c.name+" ("+pc(c.cost_pct,2)+")",sp(c.mean,2)+" · "+(c.win_rate==null?"–":pc(c.win_rate*100,0)))),
+  h("div",{class:"note"},"Teljes oda-vissza költség a pozíció %-ában (díj + csúszás). A lapos 15% a meglévő tartalék-feltevés; a 6%-os költségkapu felett nem lépne be.")));
+ out.push(card("Minta",row("Vizsgált token (pool)",String(Sm.universe==null?"–":Sm.universe)),row("Használható óradata",String(Sm.with_data==null?"–":Sm.with_data)),row("Poolok kötéssel",String(Sm.pools_traded==null?"–":Sm.pools_traded)),
+  row("Belépések időszaka",(Sm.first||"–")+" … "+(Sm.last||"–")),row("Adatablak",(Sm.data_start||"–")+" … "+(Sm.data_end||"–")),row("Max tartás",Sm.horizon_h?Sm.horizon_h+" óra":"–"),
+  h("div",{class:"note"},"Csak a ma is létező poolokból; egy token egyszer léphet be 7 naponta.")));
+ const X=[];
+ if(B.strict)X.push(det("Szigorú minta (mai likviditás ≥ $50K)",row("Kötés",String(B.strict.n)+(B.strict.status!=="ok"?" · nincs elég adat":"")),row("Átlag / kötés",sp(B.strict.mean,2)),row("Nyerési arány",wr(B.strict))));
+ if(B.fine)X.push(det("Percenkénti megfigyelés (érzékenység)",row("Kötés",String(B.fine.n)),row("Átlag / kötés",sp(B.fine.mean,2)),row("Nyerési arány",wr(B.fine))));
+ const Dd=B.dead;
+ if(Dd)X.push(det("Elhalt tokenek hatása (becslés)",row("Átlagos stop-veszteség",sp(Dd.loss_mean,1)),row("Ennyi elhalt token ellensúlyozná az egészet",Dd.break_even==null?"nincs nyereség":pc(Dd.break_even*100,0)),
+  ...Object.keys(Dd.adj||{}).map(k=>row(pc(Number(k)*100,0)+" elhalt token esetén az átlag",sp(Dd.adj[k],2))),h("div",{class:"note"},"Ha a mintából hiányzó (már nem létező) tokenek ekkora arányban jelennének meg, és mind a stopon zárnának.")));
+ out.push(...X);
+ out.push(card(null,h("div",{class:"note"},B.note||"")));
+ return out}
+
+function vForr(){
+ const E=D.ext;if(!E||E.error)return NOEXT("Források");const S2=E.sources||{},G=E.rug||{},C=E.rcx||{},out=[];
+ out.push(card("Adatforrások egészsége",!S2.n?h("div",{class:"note"},S2.note||"még nincs mérés"):h("div",null,
+  row("Utolsó mérés",ago(S2.age_s||0)+" ezelőtt",S2.stale?"bad":""),S2.stale?tg("régi adat",true):tg("friss"),
+  ...(S2.sources||[]).map(s=>h("div",null,bar(s.name+" ("+s.what+")",s.ok+" / "+s.n,s.n||1)))),
+  h("div",{class:"note"},S2.note||"")));
+ if(S2.n)out.push(card("DexScreener ↔ GeckoTerminal",...(S2.cross&&S2.cross.length?[row("Medián ár-eltérés",S2.median_abs_price_diff==null?"–":pc(S2.median_abs_price_diff,1)),row("Eltérő (>5%)",String(S2.diverged),S2.diverged?"bad":""),
+  ...S2.cross.map(c=>h("div",{class:"it"},h("div",{class:"t"},h("span",null,c.sym),tg(c.status==="ok"?"egyezik":c.status==="diverged"?"eltér":"nincs adat",c.status==="diverged")),
+   h("div",{class:"d"},c.price_diff_pct==null?"ár: nincs adat":"ár-eltérés "+sp(c.price_diff_pct)+" · likviditás "+(c.liq_diff_pct==null?"–":sp(c.liq_diff_pct,0))),h("div",{class:"d"},"lekérés "+c.ms+" ms · "+ago(c.age_s)+" ezelőtt")))]:[h("div",{class:"note"},"még nincs keresztellenőrzés (szkennelésenként legfeljebb 2 token)")])));
+ out.push(card("Rug-címke (24 óra, utólag)",!G.n_labeled?h("div",{class:"big"},"n=0"):null,G.empty?h("div",{class:"note"},G.empty):null,G.label?h("span",{class:"tag"},G.label):null,
+  row("Megfigyelt token",String(G.n_observed||0)),row("Még nem telt le a 24 óra",String(G.n_pending||0)+(G.oldest_pending_h!=null?" (a legrégebbi "+hu(G.oldest_pending_h,1)+" órás)":"")),
+  G.n_labeled?row("Rug-címke",G.n_rug+" / "+G.n_labeled+" ("+pc(G.rug_share,0)+"; Wilson "+rng(G.rug_wilson)+")"):null,
+  det("Módszer és korlátok",h("div",{class:"note"},G.method||""),G.compare&&G.compare.n?row("Egyezés a bot rug-jelzésével",G.compare.n+" kötés"):h("div",{class:"note"},"Összevetés: még nincs lezárt kötés."))));
+ out.push(card("RugCheck-mezők (mérés, nem szűrő)",h("div",{class:"note"},"Új mért mezők: létrehozás ideje, piactípus, LP-zár, zárolók, LP-szolgáltatók, módosítható metaadat. Egyik sem dönt semmiről."),
+  row("Mért rekord",String(C.n||0)+" / "+String(C.rows||0)),row("Módosítható metaadat",String(C.mutable||0)),row("LP-zár < 50%",String(C.lp_under_50||0)),row("Érzékelt < 1 órája",String(C.detected_under_1h||0)),
+  ...Object.entries(C.market_types||{}).map(([k,v])=>row("Piactípus: "+k,String(v)))));
+ const X=E.extra||{};
+ out.push(card("Kiegészítő mérések (mérés, nem szűrő)",h("div",{class:"note"},X.note||"Csak mérés: semmit nem szűr, nem módosít."),
+  !X.mints?h("div",{class:"note"},"még nincs mérés: az első szkennelés után jelenik meg"):h("div",null,
+  row("Mért token (6 óránként legfeljebb 1)",String(X.mints)),
+  row("Insider-koncentráció (RugCheck)",X.with_insider+" mérve · hálózatos: "+X.ins_any+" · ≥10%: "+X.ins_hi),
+  row("Gyanús insider-adat (>100% / 'Bundled' kockázat)",X.ins_over100+" / "+X.bundled_risk),
+  row("GoPlus: mérve / van jelző",X.with_goplus+" / "+X.gp_any_flag),
+  row("GoPlus ↔ RugCheck eltérés",X.gp_disagree+" / "+X.gp_checked_vs_rc+" összevetésből"),
+  row("Fizetett promó (DexScreener)",X.promo_any+" / "+X.with_promo+" · profil: "+X.promo_profile+" · boost: "+X.promo_boost),
+  row("Rug-ticker: lekérés / teljes lefedésű",X.polls+" / "+X.polls_complete+" · találat: "+X.rug_hits)),
+  det("Mit jelent, és mit nem",h("div",{class:"note"},"Insider-hálózat = pénzmozgással összekötött tárcák, NEM azonos blokkban vásárolt 'bundle'. A rug-ticker csak az utolsó pár percet fedi: találat bizonyíték, hiány nem. Átlagos hozam csak ≥"+(X.min_n||30)+" különböző tokennél jelenik meg."),
+   ...((X.buckets||[]).map(b=>row(b.name,b.n_mints+" token / "+b.n_trades+" kötés"+(b.mean_pct==null?" · átlag: még nincs elég adat":" · átlag "+sp(b.mean_pct,1))))))));
+ const GS=X.gate_shadow||{},RS=X.rugsupp||{},NE="nincs elég adat",mn=GS.min_n||X.min_n||30;
+ const side=(o)=>!o||o.n==null?"–":o.mean_pct==null?o.n+" token · "+NE:o.n+" token · átlag "+sp(o.mean_pct,1)+" · nyerő "+pc(o.win_share*100,0)+" (Wilson "+(o.win_wilson?hu(o.win_wilson[0]*100,0)+"–"+hu(o.win_wilson[1]*100,0)+"%":"–")+")";
+ out.push(card("Kapu-árnyék (mérés, nem szűr)",h("div",{class:"note"},"Ellenfaktuális: hány mintát tiltott volna az adott kapu. A kapuk nem működnek, a szkenner döntését nem érintik. Vödrönként legalább "+mn+" különböző token kell, addig: "+NE+"."),
+  !GS.n_rows?h("div",{class:"note"},"még nincs minta: az első szkennelés után jelenik meg"):h("div",null,
+   row("Mért minta (token)",String(GS.n_rows)),
+   ...(GS.gates||[]).map(g=>row(g.name,g.n_would_block+" / "+g.n_known+" tiltott volna"+(g.share==null?"":" ("+pc(g.share*100,0)+")")+(g.enough?"":" · "+NE))),
+   ...(GS.gates||[]).map(g=>det(g.name+" – kimenetel",
+     ...(GS.sources||[]).map(sr=>{const o=(g.outcome||{})[sr.key];return h("div",{class:"it"},h("div",{class:"t"},h("span",null,sr.name),tg(sr.n_mints+" lezárt token",false)),
+       h("div",{class:"d"},"tiltott volna: "+side(o&&o.block)),h("div",{class:"d"},"átengedte: "+side(o&&o.keep)))}),
+     h("div",{class:"note"},"Ismeretlen forrású minta: "+g.n_unknown+" (nem találgatjuk)."))),
+   ...(GS.buckets||[]).map(b=>det(b.name,...b.items.map(i=>row(i.label,i.n+" token"+(i.enough?"":" · "+NE)+" · lezárt: "+((i.n_out&&(i.n_out.arena||0)+(i.n_out.explore||0)+(i.n_out.live||0))||0))))))));
+ out.push(card("RugCheck 'rugged' újraellenőrzés (22–72 óra)",h("div",{class:"note"},"Csak mérés. A RugCheck saját jelzője egy token első mintája után 22–72 órával, összevetve a rug-címkével (proxy). Szkennelésenként legfeljebb 3 hívás, élő pozíciónál nulla."),
+  !RS.checked?h("div",{class:"note"},"még nincs újraellenőrzés (az első minta után 22 óra múlva indul)"):h("div",null,
+   row("Újraellenőrzött token",String(RS.checked)+" · sikeres: "+RS.ok+" · sikertelen: "+RS.failed),
+   row("RugCheck szerint 'rugged'",RS.rc_rugged+" / "+RS.ok),
+   row("Összevethető a rug-címkével",String(RS.joined)+(RS.joined>=(RS.min_n||30)?"":" · "+NE)),
+   row("Mindkettő rug / csak címke / csak RugCheck / egyik sem",RS.both_rug+" / "+RS.only_proxy+" / "+RS.only_rc+" / "+RS.neither),
+   RS.precision!=null?row("A címke találatából RugCheck is rugged",pc(RS.precision*100,0)):null,RS.recall!=null?row("A RugCheck-találatból a címke is rug",pc(RS.recall*100,0)):null)));
+ return out}
+
+const VIEWS={hid:vHid,rontgen:vRontgen,szurok:vSzurok,kotesek:vKotesek,strat:vStrat,matrix:vMatrix,arena:vArena,dont:vDont,kock:vKock,edge:vEdge,bt:vBt,forr:vForr};
+function render(force){if(!D||!S)return;if(!force&&(tab==="szurok"||tab==="strat"))return;const y=window.scrollY;
+ try{$("#view").replaceChildren(...VIEWS[tab]())}catch(e){$("#view").replaceChildren(card("Hiba",h("div",{class:"note err"},"A nézet nem jeleníthető meg.")))}
+ window.scrollTo(0,y)}
+function setUpd(){const el=$("#upd");if(!D){return}const age=Math.max(0,Math.round(Date.now()/1000-D.serverTs));
+ el.replaceChildren(h("span",{class:"dot"+(failing?" off":"")}),failing?"nincs kapcsolat · utolsó adat: "+D.generated:"frissítve "+ago(age)+" ezelőtt · "+D.generated)}
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+let KEY=null,KID=null,PW=null;
+async function getKey(blob){const id=blob.salt+"|"+blob.iter;if(KEY&&KID===id)return KEY;
+ const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(PW),"PBKDF2",false,["deriveKey"]);
+ KEY=await crypto.subtle.deriveKey({name:"PBKDF2",salt:b64(blob.salt),iterations:blob.iter,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["decrypt"]);KID=id;return KEY}
+async function fetchPlain(){const r=await fetch("data.enc.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)throw r.status;const blob=await r.json();
+ const key=await getKey(blob);const buf=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64(blob.iv)},key,b64(blob.ct));return JSON.parse(new TextDecoder().decode(buf))}
+async function load(){try{const p=await fetchPlain();D=p.d;S=p.s;failing=false;lastOk=Date.now();
+  if(!tabsList().some(t=>t[0]===tab))tab="hid";renderTabs();render(true)}catch(e){if(e&&e.name==="OperationError")throw e;failing=true}setUpd()}
+function showErr(m){const e=$("#ge");e.textContent=m;e.hidden=false}
+$("#gf").addEventListener("submit",async ev=>{ev.preventDefault();const b=$("#gb");b.disabled=true;$("#ge").hidden=true;PW=$("#pw").value;KEY=null;
+ try{await load();if(!D)throw 0;$("#gate").hidden=true;$("#app").hidden=false;$("#pw").value="";
+  setInterval(()=>{if(!document.hidden)load().catch(()=>{})},60000);setInterval(setUpd,5000);
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden&&Date.now()-lastOk>30000)load().catch(()=>{})})}
+ catch(e){PW=null;KEY=null;showErr("Hibás jelszó vagy nincs adat.");b.disabled=false}});
+$("#lo").addEventListener("click",e=>{e.preventDefault();location.reload()});
+</script></body></html>
